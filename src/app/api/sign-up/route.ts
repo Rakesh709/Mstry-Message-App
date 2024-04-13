@@ -6,6 +6,7 @@ import UserModel from "@/model/User"
 import bcrypt from  "bcryptjs";
 
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
+import { json } from "stream/consumers";
 
 export async function POST(request:Request){
     await dbConnect()
@@ -29,7 +30,22 @@ export async function POST(request:Request){
 
 
         if (existingUserByEmail) {
-            true // TODO back here
+            if(existingUserByEmail.isVerified){
+                return Response.json({
+                    success:false,
+                    message: "User already exist with this email"
+        
+                },{status:400})
+            } else{
+                const hasedPassword = await bcrypt.hash(password,10)
+                existingUserByEmail.password = hasedPassword;
+                existingUserByEmail.verifyCode = verifyCode;
+                existingUserByEmail.verifyCodeExpiry = new Date(Date.now()+3600000);
+                await existingUserByEmail.save()
+            }
+
+
+
         }else{
             const hasedPassword = await bcrypt.hash(password,10)
             const expiryDate = new Date()
@@ -48,6 +64,28 @@ export async function POST(request:Request){
 
             await newUser.save()
         }
+
+
+        //send verification email
+
+        const emailResponse = await sendVerificationEmail(
+            email,
+            username,
+            verifyCode
+        )
+        if (emailResponse.success){
+            return Response.json({
+                success:false,
+                message: emailResponse.message
+
+            },{status:500})
+        }
+
+        return Response.json({
+            success:true,
+            message: "User registered successfully. Please verify your email"
+
+        },{status:201})
         
     } catch (error) {
         console.log('Error registering user',error)
