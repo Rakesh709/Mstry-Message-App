@@ -4,8 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
-import { error } from "console";
-import { use } from "react";
+
 
 export const authOptions:NextAuthOptions={
     providers:[
@@ -49,6 +48,9 @@ export const authOptions:NextAuthOptions={
         async session({ session, token }) {
             if(token){
                session.user._id = token._id 
+               session.user.isVerified= token.isVerified
+               session.user.isAcceptingMessages = token.isAcceptingMessages
+               session.user.username = token.username
             }
             return session
           },
