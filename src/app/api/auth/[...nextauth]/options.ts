@@ -30,9 +30,9 @@ export const authOptions:NextAuthOptions={
                     if(user.isVerified){
                         throw new Error('Please verify your account before login')
                     }
-                    const isPasswordCorrcet = await bcrypt.compare(credentials.password, user.password)
+                    const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password)
 
-                    if(isPasswordCorrcet){
+                    if(isPasswordCorrect){
                         return user
                     }else{
                         throw new Error('Incorrect  Password')
@@ -45,15 +45,18 @@ export const authOptions:NextAuthOptions={
         })
     ],
     callbacks:{
+        //in session alsways return session
         async session({ session, token }) {
             if(token){
                session.user._id = token._id 
+               //_id is not as per the module so we are making changes in next-auth.d.ts here we defined our data & same for all
                session.user.isVerified= token.isVerified
                session.user.isAcceptingMessages = token.isAcceptingMessages
                session.user.username = token.username
             }
             return session
           },
+          //if you are using jwt return token or else lot of bugs will get
           async jwt({ token, user  }) {
             if (user) {
                 token._id = user._id?.toString()
