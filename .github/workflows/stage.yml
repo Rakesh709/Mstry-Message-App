@@ -1,0 +1,40 @@
+name: Stage Pipeline
+
+on:
+  push:
+    branches:
+      - stage
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      # - name: Run tests
+      #   run: npm test
+
+      - name: Build project
+        run: npm run build
+
+  # approve-prod:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #   - name: Approval required
+  #     uses: actions/github-script@v4
+  #     with:
+  #       script: |
+  #         const { octokit, context } = require('@actions/github');
+  #         await octokit.rest.pulls.create({
+  #           owner: context.repo.owner,
+  #           repo: context.repo.repo,
+  #           title: "Approval for Prod",
+  #           head: "stage",
+  #           base: "prod",
+  #           body: "Please approve the changes to push to Prod.",
+  #         });
