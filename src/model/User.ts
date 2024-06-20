@@ -1,3 +1,4 @@
+// abhi kai lia haam sirf user and messg kaia data hai
 import mongoose,{Schema,Document} from "mongoose";
 
 
@@ -7,6 +8,8 @@ export interface Message extends  Document {
         createdAt : Date
 }
 
+//mongoose mai string capital String
+//typescript mai string small string
 const MessageSchema: Schema<Message> = new Schema({
         content:{
             type:String,
@@ -47,7 +50,7 @@ const UserSchema: Schema<User> = new Schema({
     },
     password :{
         type: String,
-        required:[true,'password is required'],
+        required:[true,'Password is required'],
     },
     verifyCode:{
         type:String,
@@ -55,7 +58,7 @@ const UserSchema: Schema<User> = new Schema({
     },
     verifyCodeExpiry:{
         type: Date,
-        required: [true,"verify code date is required"],
+        required: [true,"verify code Expiry is required"],
     },
     isVerified:{
         type: Boolean,
