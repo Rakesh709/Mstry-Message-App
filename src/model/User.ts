@@ -73,6 +73,10 @@ const UserSchema: Schema<User> = new Schema({
 
 })
 
+//here we are checking 2 cases 
+//1. if data is not created then creat it 
+//2. if data is created already then feach it from there
+
 const UserModel = (mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User", UserSchema)
 
 export default UserModel;
