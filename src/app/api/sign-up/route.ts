@@ -11,14 +11,16 @@ import { json } from "stream/consumers";
 export async function POST(request:Request){
     await dbConnect()
 
+
+    // in frontend 3 field will be there email, username, password
     try {
         const {username,email,password}=await request.json()
-        const existingUserVerifiedBtUsername= await UserModel.findOne({
+        const existingUserVerifiedByUsername= await UserModel.findOne({
             username,
             isVerified:true
         })
 
-        if(existingUserVerifiedBtUsername){
+        if(existingUserVerifiedByUsername){
             return Response.json({
                 success:false,
                 message:"Username is already taken"
@@ -73,7 +75,7 @@ export async function POST(request:Request){
             username,
             verifyCode
         )
-        if (emailResponse.success){
+        if (!emailResponse.success){
             return Response.json({
                 success:false,
                 message: emailResponse.message
@@ -89,6 +91,7 @@ export async function POST(request:Request){
         
     } catch (error) {
         console.log('Error registering user',error)
+        //below error will show on frontend
         return Response.json(
             {
                 success:false,
