@@ -2,6 +2,7 @@ import NextAuth from "next-auth/next";
 
 import { authOptions } from "./options";
 
+//handler method is imp
 const handler = NextAuth(authOptions)
 
 export {handler as GET, handler as POST}
