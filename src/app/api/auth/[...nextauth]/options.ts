@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 
-
+//part 1
 export const authOptions:NextAuthOptions={
     providers:[
         CredentialsProvider({
@@ -19,17 +19,25 @@ export const authOptions:NextAuthOptions={
                 await dbConnect();
                 try {
                     const user= await UserModel.findOne({
+                        //either find by email or username
                         $or:[
                             {email: credentials.identifier},
                             {username: credentials.identifier}
                         ]
                     })
+
+                    //if user not found
                     if(!user){
                         throw new Error("No user found with this email")
                     }
-                    if(user.isVerified){
+
+                    //if user found but not verified
+                    if(!user.isVerified){
                         throw new Error('Please verify your account before login')
                     }
+
+                    //idenfier will get credentials.identifier but password you will get direct
+
                     const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password)
 
                     if(isPasswordCorrect){
@@ -44,6 +52,7 @@ export const authOptions:NextAuthOptions={
             }
         })
     ],
+    //part3
     callbacks:{
         //in session alsways return session
         async session({ session, token }) {
@@ -67,6 +76,8 @@ export const authOptions:NextAuthOptions={
             return token
           },
     },
+    //part2
+    // now the complete controll to next auth, it will create the page now
     pages:{
         signIn:'/sign-in'
     },
