@@ -16,6 +16,19 @@ const UsernameQuerySchema = z.object({
 //now make get call and checking it
 
 export async function GET(request: Request) {
+    // todo: use this in other routes
+    // this if will check we are allowing only GET Method
+
+    // if (request.method !== "GET") {
+    //     return Response.json({
+    //         success: false,
+    //         message: "Method not allowed"
+    //     }, {
+    //         status: 405
+    //     })
+    // }
+
+
     await dbConnect()
 
     //below will be the example of the url from url find the username
@@ -43,10 +56,10 @@ export async function GET(request: Request) {
             })
         }
 
-        const {username} =result.data
+        const { username } = result.data
 
         //interract with db and verifying
-        const existingVerifiedUser =await UserModel.findOne({username,isVerified:true})
+        const existingVerifiedUser = await UserModel.findOne({ username, isVerified: true })
 
         if (existingVerifiedUser) {
             return Response.json({
@@ -55,7 +68,7 @@ export async function GET(request: Request) {
             }, {
                 status: 400
             })
-        } 
+        }
 
         return Response.json({
             success: true,
@@ -64,7 +77,7 @@ export async function GET(request: Request) {
             status: 400
         })
 
-        
+
 
     } catch (error) {
         console.error("Error checking username", error)
