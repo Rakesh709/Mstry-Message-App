@@ -3,18 +3,18 @@ import UserModel from "@/model/User";
 
 import { Message } from "@/model/User";
 
-export async function POST(request:Request){
+export async function POST(request: Request) {
     await dbConnect()
 
     //get the value
 
-    const {username,content}= await request.json()
+    const { username, content } = await request.json()
 
     //find the user
 
     try {
-        const user = await UserModel.findOne({username})
-        if(!user){
+        const user = await UserModel.findOne({ username })
+        if (!user) {
             return Response.json({
                 success: false,
                 message: "User not found"
@@ -25,7 +25,7 @@ export async function POST(request:Request){
 
         //if user found , is user accepting the message
 
-        if(!user.isAcceptingMessage){
+        if (!user.isAcceptingMessage) {
             return Response.json({
                 success: false,
                 message: "User is not accepting the messages"
@@ -33,9 +33,29 @@ export async function POST(request:Request){
                 status: 403
             })
         }
+        //if user is accepting the message , create the message
+        const newMessage = { content, createdAt: new Date() }
 
-        const newMessage = {content, createdAt: new Date()}
+        //now push the msg into user msg
+
+        user.messages.push(newMessage as Message)
+
+        await user.save()
+
+        return Response.json({
+            success: true,
+            message: "Message sent successfully"
+        }, {
+            status: 200
+        })
     } catch (error) {
-        
+        console.log("Error adding message: ",error)
+
+        return Response.json({
+            success: false,
+            message: "Internal server error"
+        }, {
+            status: 500
+        })
     }
 }
